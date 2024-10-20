@@ -1,0 +1,70 @@
+---
+- name: Installer Docker et le SDK Python Docker
+  hosts: all
+  become: yes  # Exécuter en tant que super utilisateur (root)
+  tasks:
+
+    - name: Mettre à jour la liste des paquets
+      apt:
+        update_cache: yes
+
+    - name: Installer les paquets nécessaires pour Docker
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - gnupg-agent
+          - curl
+          - software-properties-common
+        update_cache: yes
+
+    - name: Ajouter la clé GPG officielle de Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+
+    - name: Ajouter le dépôt Docker à APT
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Mettre à jour la liste des paquets après ajout du dépôt Docker
+      apt:
+        update_cache: yes
+
+    - name: Installer Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        update_cache: yes
+
+    - name: add userpermissions
+      shell: "usermod -aG docker ubuntu"
+
+    - name: S'assurer que Docker est démarré et activé au démarrage
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Installer pip3 (gestionnaire de paquets Python)
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Installer le SDK Docker pour Python
+      pip:
+        name:
+           - docker
+           - docker-compose
+        state: present
+
+    - name: Vérifier l'installation de Docker et du SDK Python
+      command: docker --version
+      register: docker_version_output
+
+    - name: Afficher la version de Docker installée
+      debug:
+        msg: "{{ docker_version_output.stdout }}"
