@@ -1,7 +1,7 @@
 ---
 - name: Installer Docker et le SDK Python Docker
   hosts: all
-  become: yes  # Exécuter en tant que super utilisateur (root)
+  become: yes 
   tasks:
 
     - name: Mettre à jour la liste des paquets
@@ -40,7 +40,7 @@
           - containerd.io
         update_cache: yes
 
-    - name: add userpermissions
+    - name: add user permissions
       shell: "usermod -aG docker ubuntu"
 
     - name: S'assurer que Docker est démarré et activé au démarrage

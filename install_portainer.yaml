@@ -2,7 +2,7 @@
   - hosts: all
     tasks:
   
-      - name: Deploy Portainer
+      - name: Deploy Portainer container
         community.docker.docker_container:
           name: portainer_test
           image: portainer/portainer-ee
